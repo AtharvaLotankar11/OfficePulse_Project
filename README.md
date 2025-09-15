@@ -1,7 +1,7 @@
 # OfficePulse: Intelligent Hybrid Workplace Orchestrator 🏢💡
 
 <p align="center">
-  <img src="banner.png" width=1100px height=60px alt="banner.png">
+  <img src="banner.png" width=500px height=200px alt="banner.png">
 </p>
 
 Welcome to **OfficePulse**, a next-generation smart office dashboard designed to streamline hybrid work environments with AI-driven insights, real-time desk booking, and secure, role-based access. Built with cutting-edge technologies, OfficePulse optimizes space utilization, enhances team coordination, and ensures a seamless workplace experience.
