@@ -15,7 +15,7 @@ Welcome to **OfficePulse**, a next-generation smart office dashboard designed to
 - **Employee Presence Analytics** 📊  
   Track in-office presence with interactive heatmaps and exportable reports.
 - **Secure Role-Based Access** 🔒  
-  JWT and Brcypt ensure data security with role-specific permissions.
+  JWT and Bcrypt ensure data security with role-specific permissions.
 - **Live Emergency Alerts** 🚨  
   Full-screen alerts with evacuation routes for safety and compliance.
 
@@ -27,7 +27,7 @@ Welcome to **OfficePulse**, a next-generation smart office dashboard designed to
 | **State**       | Context API                | Complex state management          |
 | **Backend**     | Node.js + Express          | RESTful API for data operations   |
 | **Database**    | MongoDB + Mongoose         | Scalable data storage             |
-| **Auth**        | JWT + Brcypt              | Secure role-based authentication  |
+| **Auth**        | JWT + Bcrypt              | Secure role-based authentication  |
 | **Realtime**    | Socket.io                 | Live updates for bookings/alerts  |
 | **DevOps**      | Docker + GitHub Actions    | Containerization & CI/CD          |
 | **Hosting**     | Vercel (FE) + Render (BE)  | Zero-downtime deployments         |
