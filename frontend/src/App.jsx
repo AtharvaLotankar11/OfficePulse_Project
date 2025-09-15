@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import { Calendar, Users, BarChart3, Shield, Lock } from 'lucide-react';
+import { Calendar, Users, BarChart3, Shield, Lock, BookOpen } from 'lucide-react';
 import RealTimeDesk from './RealTimeDesk';
 import Analytics from './Analytics';
 import Security from './Security';
+import StoredBookings from './StoredBookings';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import About from './About';
@@ -123,6 +124,12 @@ const FeaturesSection = ({ setCurrentPage }) => {
       title: "Secure & Compliant",
       description: "Enterprise-grade security with role-based access control and complete audit trails.",
       page: 'security'
+    },
+    {
+      icon: BookOpen,
+      title: "My Bookings",
+      description: "View, manage and track all your desk bookings with real-time status updates and cancellation options.",
+      page: 'stored-bookings'
     }
   ];
 
@@ -146,12 +153,12 @@ const FeaturesSection = ({ setCurrentPage }) => {
           {!isAuthenticated && (
             <div className="mt-6 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg max-w-2xl mx-auto">
               <p className="text-yellow-300 font-medium">
-                🔒 Please login to access all features
+                Please login to access all features
               </p>
             </div>
           )}
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}
@@ -254,6 +261,28 @@ const App = () => {
                 <Lock className="text-red-400 mx-auto mb-4" size={64} />
                 <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
                 <p className="text-gray-300 mb-6">Please login to access security features</p>
+                <button
+                  onClick={() => setCurrentPage('login')}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
+                >
+                  Go to Login
+                </button>
+              </div>
+            </div>
+            <Footer />
+          </>
+        );
+      case 'stored-bookings': 
+        return isAuthenticated ? (
+          <StoredBookings onBack={() => setCurrentPage('home')} />
+        ) : (
+          <>
+            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
+              <div className="text-center">
+                <Lock className="text-red-400 mx-auto mb-4" size={64} />
+                <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
+                <p className="text-gray-300 mb-6">Please login to view your bookings</p>
                 <button
                   onClick={() => setCurrentPage('login')}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
