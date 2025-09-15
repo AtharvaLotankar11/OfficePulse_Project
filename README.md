@@ -15,7 +15,7 @@ Welcome to **OfficePulse**, a next-generation smart office dashboard designed to
 - **Employee Presence Analytics** 📊  
   Track in-office presence with interactive heatmaps and exportable reports.
 - **Secure Role-Based Access** 🔒  
-  JWT and OAuth 2.0 ensure data security with role-specific permissions.
+  JWT and Brcypt ensure data security with role-specific permissions.
 - **Live Emergency Alerts** 🚨  
   Full-screen alerts with evacuation routes for safety and compliance.
 
@@ -24,25 +24,10 @@ Welcome to **OfficePulse**, a next-generation smart office dashboard designed to
 | **Layer**      | **Technology**              | **Purpose**                       |
 |-----------------|-----------------------------|-----------------------------------|
 | **Frontend**    | React + Tailwind CSS       | Responsive, modern UI design      |
-| **State**       | Redux Toolkit + Context API| Complex state management          |
+| **State**       | Context API                | Complex state management          |
 | **Backend**     | Node.js + Express          | RESTful API for data operations   |
 | **Database**    | MongoDB + Mongoose         | Scalable data storage             |
-| **Auth**        | JWT + OAuth 2.0           | Secure role-based authentication  |
+| **Auth**        | JWT + Brcypt              | Secure role-based authentication  |
 | **Realtime**    | Socket.io                 | Live updates for bookings/alerts  |
 | **DevOps**      | Docker + GitHub Actions    | Containerization & CI/CD          |
 | **Hosting**     | Vercel (FE) + Render (BE)  | Zero-downtime deployments         |
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- MongoDB
-- Docker
-- Vercel CLI (for frontend deployment)
-- Render account (for backend deployment)
-
-### Installation
-1. **Clone the Repository**  
-   ```bash
-   git clone https://github.com/yourusername/officepulse.git
-   cd officepulse
