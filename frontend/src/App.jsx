@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
-import { Calendar, Users, BarChart3, Shield, Lock, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Users, BarChart3, Shield, Lock, BookOpen, MessageSquare, Video } from 'lucide-react';
 import RealTimeDesk from './RealTimeDesk';
 import Analytics from './Analytics';
 import Security from './Security';
 import StoredBookings from './StoredBookings';
+import CommunityChat from './CommunityChat';
+import VideoMeetup from './VideoMeetup';
 import Chatbot from './Chatbot';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -44,7 +46,7 @@ const HeroSection = () => {
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
           Streamline hybrid work with AI-driven insights, real-time desk booking, 
-          intelligent space optimization, and 24/7 AI assistant
+          intelligent space optimization, and community collaboration
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl">
@@ -62,7 +64,6 @@ const HeroSection = () => {
 // Feature Card with Authentication Check
 const FeatureCard = ({ icon: Icon, title, description, delay, onClick, isLocked }) => {
   const isVisible = useFadeIn(delay);
-  const { isAuthenticated } = useAppContext();
   
   return (
     <div 
@@ -110,9 +111,27 @@ const FeaturesSection = ({ setCurrentPage }) => {
   const features = [
     {
       icon: Calendar,
-      title: "Real-time Desk Booking",
+      title: "Real-Time Desk Booking",
       description: "Book desks and meeting rooms instantly with live availability updates and smart conflict resolution.",
       page: 'desk-booking'
+    },
+    {
+      icon: BookOpen,
+      title: "My Bookings",
+      description: "View, manage and track all your desk bookings with real-time status updates and cancellation options.",
+      page: 'stored-bookings'
+    },
+    {
+      icon: Video,
+      title: "Video Meetup",
+      description: "Host and join secure video conferences with colleagues. Real-time collaboration with screen sharing.",
+      page: 'video-meetup'
+    },
+    {
+      icon: MessageSquare,
+      title: "Community Chat",
+      description: "Connect with colleagues, discuss workplace topics, share insights, and collaborate in real-time.",
+      page: 'community-chat'
     },
     {
       icon: BarChart3,
@@ -125,12 +144,6 @@ const FeaturesSection = ({ setCurrentPage }) => {
       title: "Secure & Compliant",
       description: "Enterprise-grade security with role-based access control and complete audit trails.",
       page: 'security'
-    },
-    {
-      icon: BookOpen,
-      title: "My Bookings",
-      description: "View, manage and track all your desk bookings with real-time status updates and cancellation options.",
-      page: 'stored-bookings'
     }
   ];
 
@@ -159,7 +172,7 @@ const FeaturesSection = ({ setCurrentPage }) => {
             </div>
           )}
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}
@@ -187,9 +200,49 @@ const HomePage = ({ setCurrentPage }) => {
   );
 };
 
+// Protected Route Component
+const ProtectedRoute = ({ children, redirectPage = 'login' }) => {
+  const { isAuthenticated, setCurrentPage } = useAppContext();
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Navbar currentPage={redirectPage} setCurrentPage={setCurrentPage} />
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
+          <div className="text-center">
+            <Lock className="text-red-400 mx-auto mb-4" size={64} />
+            <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
+            <p className="text-gray-300 mb-6">Please login to access this feature</p>
+            <button
+              onClick={() => setCurrentPage('login')}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return children;
+};
+
 // App Renderer
 const App = () => {
-  const { currentPage, setCurrentPage, isAuthenticated } = useAppContext();
+  const { currentPage, setCurrentPage, isAuthenticated, runAllCleanups } = useAppContext();
+
+  // Cleanup when page changes
+  useEffect(() => {
+    // Run cleanup when navigating away from video-meetup
+    return () => {
+      if (currentPage === 'video-meetup') {
+        console.log("App component cleanup - running video cleanups");
+        runAllCleanups();
+      }
+    };
+  }, [currentPage, runAllCleanups]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -208,92 +261,40 @@ const App = () => {
       case 'register': 
         return <Register currentPage={currentPage} setCurrentPage={setCurrentPage} />;
       case 'desk-booking': 
-        return isAuthenticated ? (
-          <RealTimeDesk onBack={() => setCurrentPage('home')} />
-        ) : (
-          <>
-            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
-              <div className="text-center">
-                <Lock className="text-red-400 mx-auto mb-4" size={64} />
-                <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
-                <p className="text-gray-300 mb-6">Please login to access desk booking</p>
-                <button
-                  onClick={() => setCurrentPage('login')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-            <Footer />
-          </>
+        return (
+          <ProtectedRoute>
+            <RealTimeDesk onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
+        );
+      case 'video-meetup':
+        return (
+          <ProtectedRoute>
+            <VideoMeetup onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
+        );
+      case 'community-chat':
+        return (
+          <ProtectedRoute>
+            <CommunityChat onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
         );
       case 'analytics': 
-        return isAuthenticated ? (
-          <Analytics onBack={() => setCurrentPage('home')} />
-        ) : (
-          <>
-            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
-              <div className="text-center">
-                <Lock className="text-red-400 mx-auto mb-4" size={64} />
-                <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
-                <p className="text-gray-300 mb-6">Please login to access analytics</p>
-                <button
-                  onClick={() => setCurrentPage('login')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-            <Footer />
-          </>
+        return (
+          <ProtectedRoute>
+            <Analytics onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
         );
       case 'security': 
-        return isAuthenticated ? (
-          <Security onBack={() => setCurrentPage('home')} />
-        ) : (
-          <>
-            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
-              <div className="text-center">
-                <Lock className="text-red-400 mx-auto mb-4" size={64} />
-                <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
-                <p className="text-gray-300 mb-6">Please login to access security features</p>
-                <button
-                  onClick={() => setCurrentPage('login')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-            <Footer />
-          </>
+        return (
+          <ProtectedRoute>
+            <Security onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
         );
       case 'stored-bookings': 
-        return isAuthenticated ? (
-          <StoredBookings onBack={() => setCurrentPage('home')} />
-        ) : (
-          <>
-            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 flex items-center justify-center">
-              <div className="text-center">
-                <Lock className="text-red-400 mx-auto mb-4" size={64} />
-                <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
-                <p className="text-gray-300 mb-6">Please login to view your bookings</p>
-                <button
-                  onClick={() => setCurrentPage('login')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
-                >
-                  Go to Login
-                </button>
-              </div>
-            </div>
-            <Footer />
-          </>
+        return (
+          <ProtectedRoute>
+            <StoredBookings onBack={() => setCurrentPage('home')} />
+          </ProtectedRoute>
         );
       default: 
         return (

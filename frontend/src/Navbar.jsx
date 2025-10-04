@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Info, LogIn, LogOut, Menu, X, User } from 'lucide-react';
+import { Home, Info, LogIn, LogOut, Menu, X, User, MessageSquare } from 'lucide-react';
 import { useAppContext } from './AppContext';
 
 const Navbar = ({ currentPage, setCurrentPage }) => {
@@ -63,8 +63,13 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             {isAuthenticated && user && (
               <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-gray-600">
                 <div className="flex items-center gap-2 text-gray-300">
-                  <User size={16} />
-                  <span className="text-sm font-medium">{user.email}</span>
+                  <div 
+                    className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm"
+                    title={user.email}
+                  >
+                    {user.email.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium max-w-[150px] truncate">{user.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -115,7 +120,11 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
               <>
                 <div className="px-3 py-2 border-t border-gray-600 mt-2">
                   <div className="flex items-center gap-2 text-gray-300 mb-2">
-                    <User size={16} />
+                    <div 
+                      className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm"
+                    >
+                      {user.email.charAt(0).toUpperCase()}
+                    </div>
                     <span className="text-sm font-medium">{user.email}</span>
                   </div>
                   <button

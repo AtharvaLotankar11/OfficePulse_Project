@@ -3,6 +3,7 @@ import { BarChart3, TrendingUp, TrendingDown, Users, Clock, MapPin, Calendar, Ta
 import Navbar from './Navbar';
 import Footer from './Footer';
 import apiService from './services/api';
+import { useAppContext } from './AppContext';
 
 const useFadeIn = (delay = 0) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -414,10 +415,13 @@ const Analytics = ({ onBack }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedView, setSelectedView] = useState('overview');
-  const [currentPage, setCurrentPage] = useState('analytics');
+
   const [bookingsData, setBookingsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Get navigation from context
+  const { setCurrentPage } = useAppContext();
   
   // Dynamic calculated data
   const [occupancyData, setOccupancyData] = useState([]);
@@ -501,7 +505,7 @@ const Analytics = ({ onBack }) => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
-        <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <Navbar currentPage="analytics" setCurrentPage={setCurrentPage} />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -514,7 +518,7 @@ const Analytics = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar currentPage="analytics" setCurrentPage={setCurrentPage} />
       
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4">

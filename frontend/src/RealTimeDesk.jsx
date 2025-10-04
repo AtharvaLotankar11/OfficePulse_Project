@@ -409,12 +409,10 @@ const RealTimeDesk = ({ onBack }) => {
     features: []
   });
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [currentPage, setCurrentPage] = useState('desk-booking');
-  
   const isVisible = useFadeIn(200);
   
-  // Get user from context
-  const { user, isAuthenticated } = useAppContext();
+  // Get user and navigation from context
+  const { user, isAuthenticated, setCurrentPage } = useAppContext();
 
   const showMessage = (msg, type) => {
     setMessage(msg);
@@ -528,7 +526,7 @@ const RealTimeDesk = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar currentPage="desk-booking" setCurrentPage={setCurrentPage} />
       
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4">

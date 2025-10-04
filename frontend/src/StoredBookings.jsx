@@ -281,10 +281,10 @@ const StoredBookings = ({ onBack }) => {
   const [isCancelling, setIsCancelling] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [currentPage, setCurrentPage] = useState('stored-bookings');
+
   
   const isVisible = useFadeIn(200);
-  const { user, isAuthenticated } = useAppContext();
+  const { user, isAuthenticated, setCurrentPage } = useAppContext();
 
   const showMessage = (msg, type) => {
     setMessage(msg);
@@ -379,7 +379,7 @@ const StoredBookings = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar currentPage="stored-bookings" setCurrentPage={setCurrentPage} />
       
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4">

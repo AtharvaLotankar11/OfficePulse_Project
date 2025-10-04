@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, Lock, Eye, Users, AlertTriangle, CheckCircle, XCircle, Key, Fingerprint, Smartphone, Wifi, Camera, ArrowLeft, Download, RefreshCw, Clock, MapPin, User, Activity, Database, Globe, Server } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { useAppContext } from './AppContext';
 
 // Mock security data
 const securityMetrics = [
@@ -297,8 +298,11 @@ const SecurityFeatureCard = ({ feature, delay }) => {
 const Security = ({ onBack }) => {
   const [selectedTab, setSelectedTab] = useState('overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentPage, setCurrentPage] = useState('security');
+
   const isVisible = useFadeIn(200);
+  
+  // Get navigation from context
+  const { setCurrentPage } = useAppContext();
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -315,7 +319,7 @@ const Security = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar currentPage="security" setCurrentPage={setCurrentPage} />
       
       <div className="pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-4">

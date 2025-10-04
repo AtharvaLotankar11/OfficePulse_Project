@@ -4,6 +4,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 const connectDB = require('./config/database');
 const { setupChatSocket } = require('./services/chatService');
+const { setupCommunityChatSocket } = require('./services/communityChatService');
+const { setupVideoMeetupSocket } = require('./services/videoMeetupService');
 require('dotenv').config();
 
 // Import routes
@@ -13,7 +15,7 @@ const bookingRoutes = require('./routes/bookings');
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io setup
+// Socket.io setup with CORS
 const io = socketIo(server, {
   cors: {
     origin: ['http://localhost:5173', 'http://localhost:3000'],
@@ -27,7 +29,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'], // Vite and CRA ports
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -45,14 +47,18 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     features: {
       realTimeChat: true,
+      communityChat: true,
+      videoMeetup: true,
       analytics: true,
       websockets: true
     }
   });
 });
 
-// Setup chat socket handlers
-setupChatSocket(io);
+// Setup socket handlers
+setupChatSocket(io); // AI Chatbot
+setupCommunityChatSocket(io); // Community Chat
+setupVideoMeetupSocket(io); // Video Meetup
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -86,7 +92,8 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV}`);
-  console.log(`💬 WebSocket Chat: Enabled`);
-  console.log(`📈 Analytics: Enhanced`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`💬 AI Chatbot: Enabled`);
+  console.log(`👥 Community Chat: Enabled`);
+  console.log(`🎥 Video Meetup: Enabled`);
 });

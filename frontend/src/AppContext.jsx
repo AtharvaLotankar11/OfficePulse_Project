@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [cleanupCallbacks, setCleanupCallbacks] = useState([]);
 
   // Check for existing token on load
   useEffect(() => {
@@ -74,14 +75,44 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Global cleanup mechanism for media streams
+  const registerCleanup = (cleanupFn) => {
+    setCleanupCallbacks(prev => [...prev, cleanupFn]);
+  };
+
+  const unregisterCleanup = (cleanupFn) => {
+    setCleanupCallbacks(prev => prev.filter(fn => fn !== cleanupFn));
+  };
+
+  const runAllCleanups = () => {
+    console.log("Running all registered cleanup functions");
+    cleanupCallbacks.forEach(cleanup => {
+      try {
+        cleanup();
+      } catch (error) {
+        console.error("Error running cleanup function:", error);
+      }
+    });
+  };
+
+  // Enhanced setCurrentPage that runs cleanups before navigation
+  const setCurrentPageWithCleanup = (page) => {
+    if (currentPage === 'video-meetup' && page !== 'video-meetup') {
+      console.log("Navigating away from video-meetup, running cleanups");
+      runAllCleanups();
+    }
+    setCurrentPage(page);
+  };
+
   return (
     <AppContext.Provider value={{
-      currentPage, setCurrentPage,
+      currentPage, setCurrentPage: setCurrentPageWithCleanup,
       isMenuOpen, setIsMenuOpen,
       user, setUser,
       isAuthenticated, setIsAuthenticated,
       isLoading,
-      login, logout, register
+      login, logout, register,
+      registerCleanup, unregisterCleanup, runAllCleanups
     }}>
       {children}
     </AppContext.Provider>
