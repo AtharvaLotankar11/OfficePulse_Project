@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import apiService from './services/api';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import apiService from "./services/api";
 
 // Create the context
 export const AppContext = createContext();
 
 // Provider component with auth and MongoDB integration
 export const AppProvider = ({ children }) => {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,7 +29,7 @@ export const AppProvider = ({ children }) => {
       setUser(response.data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      console.error("Failed to fetch user:", error);
       apiService.removeAuthToken();
       setIsAuthenticated(false);
       setUser(null);
@@ -46,9 +46,9 @@ export const AppProvider = ({ children }) => {
       apiService.setAuthToken(response.data.token);
       setUser(response.data.user);
       setIsAuthenticated(true);
-      return { success: true, message: 'Login successful!' };
+      return { success: true, message: "Login successful!" };
     } catch (error) {
-      return { success: false, message: error.message || 'Login failed' };
+      return { success: false, message: error.message || "Login failed" };
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +59,7 @@ export const AppProvider = ({ children }) => {
     apiService.removeAuthToken();
     setUser(null);
     setIsAuthenticated(false);
-    setCurrentPage('home'); // Redirect to home on logout
+    setCurrentPage("home"); // Redirect to home on logout
   };
 
   // Register with /auth/register (MongoDB)
@@ -67,9 +67,12 @@ export const AppProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await apiService.register(userData);
-      return { success: true, message: 'Registration successful!' };
+      return { success: true, message: "Registration successful!" };
     } catch (error) {
-      return { success: false, message: error.message || 'Registration failed' };
+      return {
+        success: false,
+        message: error.message || "Registration failed",
+      };
     } finally {
       setIsLoading(false);
     }
@@ -77,16 +80,16 @@ export const AppProvider = ({ children }) => {
 
   // Global cleanup mechanism for media streams
   const registerCleanup = (cleanupFn) => {
-    setCleanupCallbacks(prev => [...prev, cleanupFn]);
+    setCleanupCallbacks((prev) => [...prev, cleanupFn]);
   };
 
   const unregisterCleanup = (cleanupFn) => {
-    setCleanupCallbacks(prev => prev.filter(fn => fn !== cleanupFn));
+    setCleanupCallbacks((prev) => prev.filter((fn) => fn !== cleanupFn));
   };
 
   const runAllCleanups = () => {
     console.log("Running all registered cleanup functions");
-    cleanupCallbacks.forEach(cleanup => {
+    cleanupCallbacks.forEach((cleanup) => {
       try {
         cleanup();
       } catch (error) {
@@ -97,7 +100,7 @@ export const AppProvider = ({ children }) => {
 
   // Enhanced setCurrentPage that runs cleanups before navigation
   const setCurrentPageWithCleanup = (page) => {
-    if (currentPage === 'video-meetup' && page !== 'video-meetup') {
+    if (currentPage === "video-meetup" && page !== "video-meetup") {
       console.log("Navigating away from video-meetup, running cleanups");
       runAllCleanups();
     }
@@ -105,15 +108,25 @@ export const AppProvider = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={{
-      currentPage, setCurrentPage: setCurrentPageWithCleanup,
-      isMenuOpen, setIsMenuOpen,
-      user, setUser,
-      isAuthenticated, setIsAuthenticated,
-      isLoading,
-      login, logout, register,
-      registerCleanup, unregisterCleanup, runAllCleanups
-    }}>
+    <AppContext.Provider
+      value={{
+        currentPage,
+        setCurrentPage: setCurrentPageWithCleanup,
+        isMenuOpen,
+        setIsMenuOpen,
+        user,
+        setUser,
+        isAuthenticated,
+        setIsAuthenticated,
+        isLoading,
+        login,
+        logout,
+        register,
+        registerCleanup,
+        unregisterCleanup,
+        runAllCleanups,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
@@ -123,7 +136,7 @@ export const AppProvider = ({ children }) => {
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useAppContext must be used within AppProvider');
+    throw new Error("useAppContext must be used within AppProvider");
   }
   return context;
 };
