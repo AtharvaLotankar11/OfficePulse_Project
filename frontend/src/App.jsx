@@ -231,6 +231,7 @@ const ProtectedRoute = ({ children, redirectPage = 'login' }) => {
 
 // App Renderer
 const App = () => {
+<<<<<<< HEAD
   const { currentPage, setCurrentPage, isAuthenticated, runAllCleanups } = useAppContext();
 
   // Cleanup when page changes
@@ -243,6 +244,9 @@ const App = () => {
       }
     };
   }, [currentPage, runAllCleanups]);
+=======
+  const { currentPage, setCurrentPage, isAuthenticated } = useAppContext();
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
 
   const renderPage = () => {
     switch (currentPage) {

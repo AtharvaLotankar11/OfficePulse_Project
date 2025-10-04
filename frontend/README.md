@@ -9,6 +9,7 @@ Currently, two official plugins are available:
 
 ## Expanding the ESLint configuration
 
+<<<<<<< HEAD
 If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
 - Configure the top-level `parserOptions` property like this:
@@ -48,3 +49,6 @@ export default tseslint.config({
   },
 })
 ```
+=======
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83

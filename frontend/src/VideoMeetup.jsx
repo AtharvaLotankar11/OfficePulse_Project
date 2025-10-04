@@ -30,6 +30,7 @@ const VideoMeetup = ({ onBack }) => {
   const [remoteStreams, setRemoteStreams] = useState({});
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
 
+<<<<<<< HEAD
   const {
     user,
     isAuthenticated,
@@ -37,6 +38,9 @@ const VideoMeetup = ({ onBack }) => {
     registerCleanup,
     unregisterCleanup,
   } = useAppContext();
+=======
+  const { user, isAuthenticated, setCurrentPage } = useAppContext();
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
   const localVideoRef = useRef(null);
   const socketRef = useRef(null);
   const peerConnectionsRef = useRef({});
@@ -52,6 +56,7 @@ const VideoMeetup = ({ onBack }) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+<<<<<<< HEAD
   // Don't initialize camera automatically - only when user requests it
 
   // Cleanup on component unmount
@@ -106,6 +111,27 @@ const VideoMeetup = ({ onBack }) => {
       window.removeEventListener("pagehide", handlePageHide);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
+=======
+  // Initialize media devices in lobby
+  useEffect(() => {
+    if (currentView === "lobby") {
+      initializeMediaDevices();
+    }
+
+    return () => {
+      cleanupMediaStream();
+    };
+  }, [currentView]);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      cleanupMediaStream();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
   }, []);
 
   // Ensure video element gets stream when available
@@ -117,6 +143,7 @@ const VideoMeetup = ({ onBack }) => {
   }, [localStream, currentView]);
 
   const cleanupMediaStream = () => {
+<<<<<<< HEAD
     console.log("🧹 Starting media stream cleanup...");
 
     // Stop local stream tracks
@@ -178,6 +205,26 @@ const VideoMeetup = ({ onBack }) => {
     }
 
     console.log("✅ Media cleanup completed - camera light should be OFF now");
+=======
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`Stopped ${track.kind} track`);
+      });
+      setLocalStream(null);
+    }
+
+    // Clean up video element
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+
+    // Clean up peer connections
+    Object.values(peerConnectionsRef.current).forEach((pc) => {
+      pc.close();
+    });
+    peerConnectionsRef.current = {};
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
   };
 
   const initializeMediaDevices = async () => {
@@ -185,7 +232,10 @@ const VideoMeetup = ({ onBack }) => {
       // Clean up existing stream first
       cleanupMediaStream();
 
+<<<<<<< HEAD
       console.log("Requesting camera and microphone access...");
+=======
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
@@ -200,17 +250,27 @@ const VideoMeetup = ({ onBack }) => {
       });
 
       setLocalStream(stream);
+<<<<<<< HEAD
       console.log("✅ Camera and microphone access granted!");
+=======
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
       console.log("Media stream created:", stream);
       console.log("Video tracks:", stream.getVideoTracks().length);
       console.log("Audio tracks:", stream.getAudioTracks().length);
 
+<<<<<<< HEAD
       // Attach stream to video element
+=======
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
         console.log("Stream attached to video element");
       } else {
+<<<<<<< HEAD
         console.log("Video element not available yet - will attach when ready");
+=======
+        console.log("Video element not available yet");
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
       }
 
       // Update track states
@@ -219,6 +279,7 @@ const VideoMeetup = ({ onBack }) => {
 
       if (videoTrack) {
         setIsVideoEnabled(videoTrack.enabled);
+<<<<<<< HEAD
         console.log("Video track enabled:", videoTrack.enabled);
       }
       if (audioTrack) {
@@ -232,6 +293,16 @@ const VideoMeetup = ({ onBack }) => {
       console.error("❌ Error accessing media devices:", error);
       setMessage({
         text: "Could not access camera/microphone. Please check permissions and try again.",
+=======
+      }
+      if (audioTrack) {
+        setIsAudioEnabled(audioTrack.enabled);
+      }
+    } catch (error) {
+      console.error("Error accessing media devices:", error);
+      setMessage({
+        text: "Could not access camera/microphone. Please check permissions.",
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
         type: "error",
       });
     }
@@ -287,12 +358,22 @@ const VideoMeetup = ({ onBack }) => {
       return;
     }
 
+<<<<<<< HEAD
     // Initialize camera when creating room
     setMessage({ text: "Initializing camera...", type: "info" });
     await initializeMediaDevices();
 
     // Wait a bit for stream to be ready
     await new Promise((resolve) => setTimeout(resolve, 1000));
+=======
+    // Ensure we have media stream before creating room
+    if (!localStream) {
+      setMessage({ text: "Initializing camera...", type: "info" });
+      await initializeMediaDevices();
+      // Wait a bit for stream to be ready
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
 
     if (!localStream) {
       setMessage({
@@ -313,12 +394,22 @@ const VideoMeetup = ({ onBack }) => {
       return;
     }
 
+<<<<<<< HEAD
     // Initialize camera when joining room
     setMessage({ text: "Initializing camera...", type: "info" });
     await initializeMediaDevices();
 
     // Wait a bit for stream to be ready
     await new Promise((resolve) => setTimeout(resolve, 1000));
+=======
+    // Ensure we have media stream before joining room
+    if (!localStream) {
+      setMessage({ text: "Initializing camera...", type: "info" });
+      await initializeMediaDevices();
+      // Wait a bit for stream to be ready
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
 
     if (!localStream) {
       setMessage({
@@ -508,8 +599,11 @@ const VideoMeetup = ({ onBack }) => {
   };
 
   const leaveMeeting = () => {
+<<<<<<< HEAD
     console.log("Leaving meeting - cleaning up meeting resources");
 
+=======
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
     // Disconnect socket
     if (socketRef.current) {
       socketRef.current.emit("leave-room");
@@ -517,6 +611,7 @@ const VideoMeetup = ({ onBack }) => {
       socketRef.current = null;
     }
 
+<<<<<<< HEAD
     // Clean up peer connections
     Object.values(peerConnectionsRef.current).forEach((pc) => {
       if (pc.connectionState !== "closed") {
@@ -542,13 +637,30 @@ const VideoMeetup = ({ onBack }) => {
     cleanupMediaStream();
 
     // Reset meeting states
+=======
+    // Clean up media streams and peer connections
+    cleanupMediaStream();
+
+    // Reset states
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
     setCurrentView("lobby");
     setRoomId("");
     setRoomName("");
     setParticipants([]);
+<<<<<<< HEAD
     setConnectionStatus("disconnected");
 
     console.log("Meeting left - camera turned off");
+=======
+    setRemoteStreams({});
+    setIsVideoEnabled(true);
+    setIsAudioEnabled(true);
+
+    // Re-initialize media for lobby preview
+    setTimeout(() => {
+      initializeMediaDevices();
+    }, 500);
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
   };
 
   const copyRoomId = () => {
@@ -593,6 +705,7 @@ const VideoMeetup = ({ onBack }) => {
           >
             <div className="flex items-center gap-4 mb-6">
               <button
+<<<<<<< HEAD
                 onClick={() => {
                   console.log(
                     "Back to Home clicked - cleaning up camera and leaving Video Meetup"
@@ -606,6 +719,9 @@ const VideoMeetup = ({ onBack }) => {
                   }
                   onBack();
                 }}
+=======
+                onClick={onBack}
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
                 className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
               >
                 <ArrowLeft size={20} />
@@ -649,7 +765,11 @@ const VideoMeetup = ({ onBack }) => {
                   </h3>
 
                   <div className="relative bg-gray-800 rounded-lg overflow-hidden aspect-video mb-4">
+<<<<<<< HEAD
                     {localStream && isVideoEnabled ? (
+=======
+                    {isVideoEnabled ? (
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
                       <video
                         ref={localVideoRef}
                         autoPlay
@@ -667,6 +787,7 @@ const VideoMeetup = ({ onBack }) => {
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <div className="text-center">
+<<<<<<< HEAD
                           {!localStream ? (
                             <>
                               <Video
@@ -692,10 +813,18 @@ const VideoMeetup = ({ onBack }) => {
                               <p className="text-gray-400">Camera is off</p>
                             </>
                           )}
+=======
+                          <VideoOff
+                            className="text-gray-400 mx-auto mb-2"
+                            size={48}
+                          />
+                          <p className="text-gray-400">Camera is off</p>
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
                         </div>
                       </div>
                     )}
 
+<<<<<<< HEAD
                     {localStream && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                         <button
@@ -736,6 +865,78 @@ const VideoMeetup = ({ onBack }) => {
                       ? "Adjust your camera and microphone before joining"
                       : "Click 'Start Camera' to preview your video before joining a meeting"}
                   </p>
+=======
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                      <button
+                        onClick={toggleVideo}
+                        className={`p-3 rounded-full transition-colors ${
+                          isVideoEnabled
+                            ? "bg-gray-700 hover:bg-gray-600"
+                            : "bg-red-600 hover:bg-red-700"
+                        }`}
+                      >
+                        {isVideoEnabled ? (
+                          <Video className="text-white" size={20} />
+                        ) : (
+                          <VideoOff className="text-white" size={20} />
+                        )}
+                      </button>
+
+                      <button
+                        onClick={toggleAudio}
+                        className={`p-3 rounded-full transition-colors ${
+                          isAudioEnabled
+                            ? "bg-gray-700 hover:bg-gray-600"
+                            : "bg-red-600 hover:bg-red-700"
+                        }`}
+                      >
+                        {isAudioEnabled ? (
+                          <Mic className="text-white" size={20} />
+                        ) : (
+                          <MicOff className="text-white" size={20} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-300 text-sm text-center">
+                    Adjust your camera and microphone before joining
+                  </p>
+
+                  {/* Debug info */}
+                  <div className="mt-2 text-xs text-gray-400 text-center">
+                    Stream: {localStream ? "✅ Active" : "❌ None"} | Video:{" "}
+                    {localStream?.getVideoTracks().length || 0} tracks | Audio:{" "}
+                    {localStream?.getAudioTracks().length || 0} tracks
+                  </div>
+
+                  {!localStream && (
+                    <button
+                      onClick={initializeMediaDevices}
+                      className="mt-2 w-full px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+                    >
+                      Retry Camera Access
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      console.log("Testing video element...");
+                      console.log(
+                        "localVideoRef.current:",
+                        localVideoRef.current
+                      );
+                      console.log("localStream:", localStream);
+                      if (localVideoRef.current && localStream) {
+                        localVideoRef.current.srcObject = localStream;
+                        console.log("Stream re-attached");
+                      }
+                    }}
+                    className="mt-2 w-full px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded transition-colors"
+                  >
+                    Debug Video
+                  </button>
+>>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
                 </div>
 
                 {/* Join Options */}
