@@ -11,10 +11,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-<<<<<<< HEAD
   const [cleanupCallbacks, setCleanupCallbacks] = useState([]);
-=======
->>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
 
   // Check for existing token on load
   useEffect(() => {
@@ -78,7 +75,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-<<<<<<< HEAD
   // Global cleanup mechanism for media streams
   const registerCleanup = (cleanupFn) => {
     setCleanupCallbacks(prev => [...prev, cleanupFn]);
@@ -111,21 +107,12 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider value={{
       currentPage, setCurrentPage: setCurrentPageWithCleanup,
-=======
-  return (
-    <AppContext.Provider value={{
-      currentPage, setCurrentPage,
->>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
       isMenuOpen, setIsMenuOpen,
       user, setUser,
       isAuthenticated, setIsAuthenticated,
       isLoading,
-<<<<<<< HEAD
       login, logout, register,
       registerCleanup, unregisterCleanup, runAllCleanups
-=======
-      login, logout, register
->>>>>>> 29dd9810b9516c35b5e1e01454f9da5e95185f83
     }}>
       {children}
     </AppContext.Provider>
