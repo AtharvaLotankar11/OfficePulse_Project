@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Video,
   VideoOff,
@@ -14,7 +14,7 @@ import {
 import { useAppContext } from "./AppContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
 const VideoMeetup = ({ onBack }) => {
   const [currentView, setCurrentView] = useState("lobby"); // 'lobby', 'meeting'
@@ -27,8 +27,8 @@ const VideoMeetup = ({ onBack }) => {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [localStream, setLocalStream] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [remoteStreams, setRemoteStreams] = useState({});
-  const [connectionStatus, setConnectionStatus] = useState("disconnected");
+  // const [remoteStreams, setRemoteStreams] = useState({});
+  // const [connectionStatus, setConnectionStatus] = useState("disconnected");
 
   const {
     user,
@@ -48,7 +48,7 @@ const VideoMeetup = ({ onBack }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const cleanupMediaStream = () => {
+  const cleanupMediaStream = useCallback(() => {
     console.log("🧹 Starting media stream cleanup...");
     
     if (localStream) {
@@ -71,9 +71,9 @@ const VideoMeetup = ({ onBack }) => {
     });
     peerConnectionsRef.current = {};
 
-    setRemoteStreams({});
+    // setRemoteStreams({});
     console.log("✅ Media cleanup completed - camera light should be OFF now");
-  };
+  }, [localStream]);
 
   const initializeMediaDevices = async () => {
     try {
@@ -247,7 +247,7 @@ const VideoMeetup = ({ onBack }) => {
       unregisterCleanup(cleanup);
       cleanup();
     };
-  }, [registerCleanup, unregisterCleanup]);
+  }, [registerCleanup, unregisterCleanup, cleanupMediaStream]);
 
   if (!isAuthenticated) {
     return (

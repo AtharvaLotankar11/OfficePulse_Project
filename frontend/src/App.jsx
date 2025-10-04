@@ -231,7 +231,7 @@ const ProtectedRoute = ({ children, redirectPage = 'login' }) => {
 
 // App Renderer
 const App = () => {
-  const { currentPage, setCurrentPage, isAuthenticated, runAllCleanups } = useAppContext();
+  const { currentPage, setCurrentPage, runAllCleanups } = useAppContext();
 
   // Cleanup when page changes
   useEffect(() => {
