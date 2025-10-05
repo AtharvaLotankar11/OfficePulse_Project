@@ -42,7 +42,7 @@ const HeroSection = () => {
           <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent block">
             Hybrid Workplace
           </span>
-          Orchestrator v2.0
+          Orchestrator
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
           Streamline hybrid work with AI-driven insights, real-time desk booking, 

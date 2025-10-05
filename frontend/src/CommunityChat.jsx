@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { io } from "socket.io-client";
 import { useAppContext } from "./AppContext";
+import { getSocketUrl } from "./config/environment";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
@@ -62,11 +63,13 @@ const CommunityChat = ({ onBack, embedded = false }) => {
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
-    const socket = io("http://localhost:5000/community", {
-      transports: ["websocket"],
+    const socket = io(getSocketUrl('community'), {
+      transports: ["websocket", "polling"],
       reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+      reconnectionAttempts: 10,
+      timeout: 15000,
+      forceNew: false,
     });
 
     socketRef.current = socket;
@@ -81,6 +84,11 @@ const CommunityChat = ({ onBack, embedded = false }) => {
         userEmail: user.email,
         userName: user.fullName || `${user.firstName} ${user.lastName}`,
       });
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Community chat connection error:", error);
+      setIsConnected(false);
     });
 
     socket.on("disconnect", () => {
@@ -256,7 +264,7 @@ const CommunityChat = ({ onBack, embedded = false }) => {
               OfficePulse Community
             </h3>
             <p className="text-blue-100 text-xs">
-              {isConnected ? `${activeUsers.length} online` : "Connecting..."}
+              {isConnected ? `${activeUsers.length} online` : "Reconnecting..."}
             </p>
           </div>
         </div>

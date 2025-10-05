@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, Send, Minimize2, Maximize2, X, Bot, User } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { useAppContext } from './AppContext';
+import { getSocketUrl } from './config/environment';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,15 +37,15 @@ const Chatbot = () => {
     }
 
     try {
-      const newSocket = io('http://localhost:5000', {
-        transports: ['websocket'],
-        upgrade: false,
-        rememberUpgrade: false,
-        timeout: 5000,
+      const newSocket = io(getSocketUrl(), {
+        transports: ['websocket', 'polling'],
+        upgrade: true,
+        rememberUpgrade: true,
+        timeout: 15000,
         forceNew: false, // Reuse existing connection if available
         reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionAttempts: 3
+        reconnectionDelay: 2000,
+        reconnectionAttempts: 10
       });
       
       newSocket.on('connect', () => {
