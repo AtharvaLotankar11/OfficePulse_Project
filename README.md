@@ -13,9 +13,9 @@ Space optimization
 
 
 ## 🔗 Links
-[![Website](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://officepulse-frontend.onrender.com)
+[![Website](https://img.shields.io/badge/Website-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://officepulse-frontend.onrender.com)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/atharva-lotankar-51824537b)
-[![Mail](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](atharvalotankar11@gmail.com)
+[![Mail](https://img.shields.io/badge/Mail-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](atharvalotankar11@gmail.com)
 
 
 ## Tech Stack
@@ -24,7 +24,7 @@ Space optimization
 
 **Server:** Node, Express
 
-**Backend:** RMongoDB Compass and Atlas
+**Backend:** MongoDB Compass and Atlas
 
 **Deployment:** Render as Web Service (backend) & Render as Static Site (frontend)
 ## Deployment
