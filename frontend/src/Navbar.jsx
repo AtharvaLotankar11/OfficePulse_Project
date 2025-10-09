@@ -42,6 +42,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-baseline space-x-4">
+              {/* eslint-disable-next-line no-unused-vars */}
               {navItems.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -98,6 +99,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
       {isMenuOpen && (
         <div className="md:hidden bg-gray-900/95 backdrop-blur-md">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            {/* eslint-disable-next-line no-unused-vars */}
             {navItems.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}

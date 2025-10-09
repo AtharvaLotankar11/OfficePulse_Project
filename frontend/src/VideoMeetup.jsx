@@ -28,7 +28,7 @@ const VideoMeetup = ({ onBack }) => {
   const [localStream, setLocalStream] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   // const [remoteStreams, setRemoteStreams] = useState({});
-  const [connectionStatus, setConnectionStatus] = useState("disconnected");
+  const [_connectionStatus, setConnectionStatus] = useState("disconnected");
 
   const {
     user,

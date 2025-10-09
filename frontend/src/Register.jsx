@@ -105,6 +105,7 @@ const Register = ({ currentPage, setCurrentPage }) => {
         setMessage({ text: result.message, type: 'error' });
       }
     } catch (error) {
+      console.error('Registration error:', error);
       setMessage({ text: 'An unexpected error occurred during registration', type: 'error' });
     }
   };

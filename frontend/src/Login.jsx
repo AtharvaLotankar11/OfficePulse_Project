@@ -51,6 +51,7 @@ const Login = ({ currentPage, setCurrentPage }) => {
         setMessage({ text: result.message, type: 'error' });
       }
     } catch (error) {
+      console.error('Login error:', error);
       setMessage({ text: 'An unexpected error occurred', type: 'error' });
     }
   };

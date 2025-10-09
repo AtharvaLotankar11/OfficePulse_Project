@@ -62,6 +62,7 @@ const HeroSection = () => {
 };
 
 // Feature Card with Authentication Check
+// eslint-disable-next-line no-unused-vars
 const FeatureCard = ({ icon: Icon, title, description, delay, onClick, isLocked }) => {
   const isVisible = useFadeIn(delay);
   

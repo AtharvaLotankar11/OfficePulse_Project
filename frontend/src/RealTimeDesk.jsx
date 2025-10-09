@@ -170,6 +170,7 @@ const BookingModal = ({ desk, isOpen, onClose, onConfirm, isLoading }) => {
     try {
       await onConfirm(bookingData);
     } catch (error) {
+      console.error('Booking error:', error);
       showMessage('Failed to create booking. Please try again.', 'error');
     }
   };
