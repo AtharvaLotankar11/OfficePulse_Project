@@ -66,7 +66,7 @@ export const AppProvider = ({ children }) => {
   const register = async (userData) => {
     setIsLoading(true);
     try {
-      const response = await apiService.register(userData);
+      await apiService.register(userData);
       return { success: true, message: "Registration successful!" };
     } catch (error) {
       return {

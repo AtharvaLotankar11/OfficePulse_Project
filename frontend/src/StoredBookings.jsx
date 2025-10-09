@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, MapPin, User, ArrowLeft, CheckCircle, XCircle, AlertCircle, Trash2, Eye, Building, Star, RefreshCw } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -295,7 +295,7 @@ const StoredBookings = ({ onBack }) => {
     }, 5000);
   };
 
-  const loadBookings = async () => {
+  const loadBookings = useCallback(async () => {
     if (!isAuthenticated || !user) {
       setIsLoading(false);
       return;
@@ -312,11 +312,11 @@ const StoredBookings = ({ onBack }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     loadBookings();
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, loadBookings]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

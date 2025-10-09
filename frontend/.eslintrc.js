@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, node: true },
   extends: [
     'eslint:recommended',
     '@eslint/js/recommended',
@@ -14,7 +14,12 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     'react-refresh/only-export-components': 'warn',
-    'no-unused-vars': 'warn',
+    'no-unused-vars': ['warn', { 
+      'argsIgnorePattern': '^_',
+      'varsIgnorePattern': '^_',
+      'destructuredArrayIgnorePattern': '^_'
+    }],
     'react-hooks/exhaustive-deps': 'warn',
+    'no-undef': 'error'
   },
 }
