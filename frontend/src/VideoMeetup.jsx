@@ -85,12 +85,12 @@ const VideoMeetup = ({ onBack }) => {
         throw new Error("getUserMedia is not supported in this browser");
       }
 
+      // Request permissions with more basic constraints first
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 1280, min: 640 },
-          height: { ideal: 720, min: 480 },
+          width: { ideal: 1280, min: 320 },
+          height: { ideal: 720, min: 240 },
           facingMode: "user",
-          frameRate: { ideal: 30, max: 30 },
         },
         audio: {
           echoCancellation: true,
@@ -105,31 +105,34 @@ const VideoMeetup = ({ onBack }) => {
       console.log("Video tracks:", stream.getVideoTracks().length);
       console.log("Audio tracks:", stream.getAudioTracks().length);
 
-      // Wait for next tick to ensure video element is ready
-      setTimeout(() => {
-        if (localVideoRef.current && stream) {
-          try {
-            localVideoRef.current.srcObject = stream;
-            // Force video to load and play
-            localVideoRef.current.load();
-            localVideoRef.current.play().catch((e) => {
-              console.log(
-                "Video play error (this is normal for some browsers):",
-                e
-              );
-              // Try again after a short delay
-              setTimeout(() => {
-                if (localVideoRef.current) {
-                  localVideoRef.current.play().catch(() => {});
-                }
-              }, 500);
-            });
-            console.log("Stream attached to video element");
-          } catch (error) {
-            console.error("Error setting video source:", error);
+      // Immediately set the video source
+      if (localVideoRef.current && stream) {
+        try {
+          localVideoRef.current.srcObject = stream;
+          localVideoRef.current.muted = true; // Ensure muted for autoplay
+          localVideoRef.current.playsInline = true;
+
+          // Try to play immediately
+          const playPromise = localVideoRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log("✅ Video playing successfully");
+              })
+              .catch((e) => {
+                console.log(
+                  "Video autoplay prevented, trying user interaction:",
+                  e
+                );
+                // Video will play when user interacts
+              });
           }
+
+          console.log("Stream attached to video element");
+        } catch (error) {
+          console.error("Error setting video source:", error);
         }
-      }, 100);
+      }
 
       const videoTrack = stream.getVideoTracks()[0];
       const audioTrack = stream.getAudioTracks()[0];
@@ -137,6 +140,7 @@ const VideoMeetup = ({ onBack }) => {
       if (videoTrack) {
         setIsVideoEnabled(videoTrack.enabled);
         console.log("Video track enabled:", videoTrack.enabled);
+        console.log("Video track settings:", videoTrack.getSettings());
 
         // Handle track ended event
         videoTrack.onended = () => {
@@ -146,6 +150,7 @@ const VideoMeetup = ({ onBack }) => {
       }
       if (audioTrack) {
         setIsAudioEnabled(audioTrack.enabled);
+        console.log("Audio track enabled:", audioTrack.enabled);
 
         // Handle track ended event
         audioTrack.onended = () => {
@@ -153,19 +158,45 @@ const VideoMeetup = ({ onBack }) => {
           setIsAudioEnabled(false);
         };
       }
+
+      // Clear any previous error messages
+      setMessage({ text: "Camera initialized successfully!", type: "success" });
     } catch (error) {
       console.error("Error accessing media devices:", error);
       let errorMessage = "Could not access camera/microphone. ";
 
       if (error.name === "NotAllowedError") {
         errorMessage +=
-          "Please allow camera and microphone permissions and try again.";
+          "Please allow camera and microphone permissions in your browser and refresh the page.";
       } else if (error.name === "NotFoundError") {
         errorMessage +=
           "No camera or microphone found. Please connect a device and try again.";
       } else if (error.name === "NotReadableError") {
         errorMessage +=
-          "Camera or microphone is already in use by another application.";
+          "Camera or microphone is already in use by another application. Please close other apps using your camera.";
+      } else if (error.name === "OverconstrainedError") {
+        errorMessage +=
+          "Camera constraints not supported. Trying with basic settings...";
+
+        // Try again with very basic constraints
+        try {
+          const basicStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
+          setLocalStream(basicStream);
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = basicStream;
+            localVideoRef.current.play().catch(() => {});
+          }
+          setMessage({
+            text: "Camera initialized with basic settings!",
+            type: "success",
+          });
+          return;
+        } catch (basicError) {
+          console.error("Basic constraints also failed:", basicError);
+        }
       } else {
         errorMessage += "Please check your device settings and try again.";
       }
@@ -378,7 +409,16 @@ const VideoMeetup = ({ onBack }) => {
                       autoPlay
                       muted
                       playsInline
-                      className={`w-full h-full object-cover ${
+                      onClick={() => {
+                        // Manual play on click if autoplay failed
+                        if (
+                          localVideoRef.current &&
+                          localVideoRef.current.paused
+                        ) {
+                          localVideoRef.current.play().catch(console.error);
+                        }
+                      }}
+                      className={`w-full h-full object-cover cursor-pointer ${
                         localStream && isVideoEnabled ? "block" : "hidden"
                       }`}
                     />
@@ -394,11 +434,14 @@ const VideoMeetup = ({ onBack }) => {
                               <p className="text-gray-400 mb-2">
                                 Camera not initialized
                               </p>
+                              <p className="text-gray-300 text-sm mb-4">
+                                Click below to enable your camera and microphone
+                              </p>
                               <button
                                 onClick={initializeMediaDevices}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
                               >
-                                Start Camera
+                                🎥 Enable Camera & Microphone
                               </button>
                             </>
                           ) : (
@@ -408,8 +451,30 @@ const VideoMeetup = ({ onBack }) => {
                                 size={48}
                               />
                               <p className="text-gray-400">Camera is off</p>
+                              <button
+                                onClick={toggleVideo}
+                                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                              >
+                                Turn On Camera
+                              </button>
                             </>
                           )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Video status indicator */}
+                    {localStream && (
+                      <div className="absolute top-2 left-2">
+                        <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              isVideoEnabled ? "bg-green-400" : "bg-red-400"
+                            }`}
+                          ></div>
+                          <span className="text-white text-xs">
+                            {isVideoEnabled ? "Camera On" : "Camera Off"}
+                          </span>
                         </div>
                       </div>
                     )}

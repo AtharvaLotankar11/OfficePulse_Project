@@ -28,28 +28,38 @@ const Chatbot = () => {
   // Initialize socket connection once
   const initializeSocket = useCallback(() => {
     if (socketRef.current?.connected) {
+      console.log('Socket already connected');
       return; // Already connected
     }
 
-    if (connectionAttempts > 3) {
+    if (connectionAttempts > 5) {
       console.log('Max connection attempts reached');
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        text: "I'm having trouble connecting to the server. Please refresh the page and try again.",
+        sender: 'bot',
+        timestamp: new Date()
+      }]);
       return;
     }
+
+    console.log(`🔌 Attempting to connect to chat server (attempt ${connectionAttempts + 1})`);
 
     try {
       const newSocket = io(getSocketUrl(), {
         transports: ['websocket', 'polling'],
         upgrade: true,
         rememberUpgrade: true,
-        timeout: 15000,
-        forceNew: false, // Reuse existing connection if available
+        timeout: 20000,
+        forceNew: false,
         reconnection: true,
         reconnectionDelay: 2000,
-        reconnectionAttempts: 10
+        reconnectionAttempts: 10,
+        autoConnect: true
       });
       
       newSocket.on('connect', () => {
-        console.log('Connected to chat server:', newSocket.id);
+        console.log('✅ Connected to chat server:', newSocket.id);
         setIsConnected(true);
         setConnectionAttempts(0);
         
@@ -61,27 +71,38 @@ const Chatbot = () => {
       });
 
       newSocket.on('connect_error', (error) => {
-        console.log('Connection error:', error.message);
+        console.log('❌ Connection error:', error.message);
         setIsConnected(false);
         setConnectionAttempts(prev => prev + 1);
+        
+        // Show user-friendly error message
+        if (connectionAttempts === 0) {
+          setMessages(prev => [...prev, {
+            id: Date.now(),
+            text: "Having trouble connecting to the AI service. Retrying...",
+            sender: 'bot',
+            timestamp: new Date()
+          }]);
+        }
       });
 
       newSocket.on('disconnect', (reason) => {
-        console.log('Disconnected:', reason);
+        console.log('🔌 Disconnected:', reason);
         setIsConnected(false);
         setIsTyping(false);
         
         // Don't auto-reconnect if manually disconnected
         if (reason !== 'io client disconnect') {
           reconnectTimeoutRef.current = setTimeout(() => {
-            if (!socketRef.current?.connected && connectionAttempts < 3) {
+            if (!socketRef.current?.connected && connectionAttempts < 5) {
               initializeSocket();
             }
-          }, 2000);
+          }, 3000);
         }
       });
 
       newSocket.on('bot-message', (data) => {
+        console.log('📨 Received bot message:', data.message);
         setIsTyping(false);
         setMessages(prev => [...prev, {
           id: Date.now(),
@@ -91,10 +112,20 @@ const Chatbot = () => {
         }]);
       });
 
+      newSocket.on('error', (error) => {
+        console.error('❌ Socket error:', error);
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          text: "I encountered an error. Please try sending your message again.",
+          sender: 'bot',
+          timestamp: new Date()
+        }]);
+      });
+
       socketRef.current = newSocket;
 
     } catch (error) {
-      console.error('Socket initialization error:', error);
+      console.error('❌ Socket initialization error:', error);
       setIsConnected(false);
       setConnectionAttempts(prev => prev + 1);
     }
@@ -121,19 +152,36 @@ const Chatbot = () => {
   }, []);
 
   const handleSendMessage = () => {
-    if (!inputMessage.trim() || !socketRef.current?.connected) return;
+    if (!inputMessage.trim()) {
+      console.log('Empty message, not sending');
+      return;
+    }
 
+    if (!socketRef.current?.connected) {
+      console.log('Socket not connected, attempting to reconnect...');
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        text: "I'm not connected to the server. Let me try to reconnect...",
+        sender: 'bot',
+        timestamp: new Date()
+      }]);
+      initializeSocket();
+      return;
+    }
+
+    const messageText = inputMessage.trim();
     const userMessage = {
       id: Date.now(),
-      text: inputMessage.trim(),
+      text: messageText,
       sender: 'user',
       timestamp: new Date()
     };
 
+    console.log('📤 Sending message:', messageText);
     setMessages(prev => [...prev, userMessage]);
     
     socketRef.current.emit('user-message', {
-      message: inputMessage.trim(),
+      message: messageText,
       userId: isAuthenticated ? user?.email : 'anonymous'
     });
 
@@ -142,8 +190,16 @@ const Chatbot = () => {
 
     // Timeout for typing indicator in case response fails
     setTimeout(() => {
-      setIsTyping(false);
-    }, 10000);
+      if (isTyping) {
+        setIsTyping(false);
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          text: "I'm taking longer than usual to respond. Please try sending your message again.",
+          sender: 'bot',
+          timestamp: new Date()
+        }]);
+      }
+    }, 15000);
   };
 
   const handleKeyPress = (e) => {
