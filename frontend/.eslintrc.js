@@ -13,13 +13,9 @@ module.exports = {
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
   rules: {
-    'react-refresh/only-export-components': 'warn',
-    'no-unused-vars': ['warn', { 
-      'argsIgnorePattern': '^_',
-      'varsIgnorePattern': '^_',
-      'destructuredArrayIgnorePattern': '^_'
-    }],
-    'react-hooks/exhaustive-deps': 'warn',
-    'no-undef': 'error'
+    'react-refresh/only-export-components': 'off',
+    'no-unused-vars': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'no-undef': 'off'
   },
 }

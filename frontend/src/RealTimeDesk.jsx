@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, Filter, Search, CheckCircle, XCircle, AlertCircle, Wifi, Monitor, Coffee, Zap, Phone, ArrowLeft, Star, User, Building } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';

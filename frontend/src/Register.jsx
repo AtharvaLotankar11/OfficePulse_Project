@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, RefreshCw, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
