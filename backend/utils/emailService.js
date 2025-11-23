@@ -4,15 +4,16 @@ const nodemailer = require('nodemailer');
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS
     },
     tls: {
       rejectUnauthorized: false // Helps with some self-signed cert issues in dev/cloud
-    }
+    },
+    family: 4 // Force IPv4
   });
 };
 

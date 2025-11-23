@@ -27,11 +27,14 @@ async function verifyConfig() {
     console.log('\nTesting connection to Gmail...');
 
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
             user: user,
             pass: pass
-        }
+        },
+        family: 4 // Force IPv4
     });
 
     try {
