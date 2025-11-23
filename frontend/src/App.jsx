@@ -12,6 +12,7 @@ import Footer from './Footer';
 import About from './About';
 import Login from './Login';
 import Register from './Register';
+import OtpNewPass from './OtpNewPass';
 import { useAppContext } from './AppContext';
 
 const useFadeIn = (delay = 0) => {
@@ -261,6 +262,8 @@ const App = () => {
         return <Login currentPage={currentPage} setCurrentPage={setCurrentPage} />;
       case 'register': 
         return <Register currentPage={currentPage} setCurrentPage={setCurrentPage} />;
+      case 'forgot-password': 
+        return <OtpNewPass currentPage={currentPage} setCurrentPage={setCurrentPage} />;
       case 'desk-booking': 
         return (
           <ProtectedRoute>

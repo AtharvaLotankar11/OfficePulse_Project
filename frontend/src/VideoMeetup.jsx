@@ -161,6 +161,9 @@ const VideoMeetup = ({ onBack }) => {
 
       // Clear any previous error messages
       setMessage({ text: "Camera initialized successfully!", type: "success" });
+
+      // Return the stream so it can be used immediately without waiting for state update
+      return stream;
     } catch (error) {
       console.error("Error accessing media devices:", error);
       let errorMessage = "Could not access camera/microphone. ";
@@ -187,13 +190,13 @@ const VideoMeetup = ({ onBack }) => {
           setLocalStream(basicStream);
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = basicStream;
-            localVideoRef.current.play().catch(() => {});
+            localVideoRef.current.play().catch(() => { });
           }
           setMessage({
             text: "Camera initialized with basic settings!",
             type: "success",
           });
-          return;
+          return basicStream;
         } catch (basicError) {
           console.error("Basic constraints also failed:", basicError);
         }
@@ -205,6 +208,8 @@ const VideoMeetup = ({ onBack }) => {
         text: errorMessage,
         type: "error",
       });
+
+      return null;
     }
   };
 
@@ -216,12 +221,10 @@ const VideoMeetup = ({ onBack }) => {
 
     // Initialize camera when creating room
     setMessage({ text: "Initializing camera...", type: "info" });
-    await initializeMediaDevices();
+    const stream = await initializeMediaDevices();
 
-    // Wait a bit for stream to be ready
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (!localStream) {
+    // Check the returned stream instead of state (which may not be updated yet)
+    if (!stream) {
       setMessage({
         text: "Camera initialization failed. Please try again.",
         type: "error",
@@ -243,12 +246,10 @@ const VideoMeetup = ({ onBack }) => {
 
     // Initialize camera when joining room
     setMessage({ text: "Initializing camera...", type: "info" });
-    await initializeMediaDevices();
+    const stream = await initializeMediaDevices();
 
-    // Wait a bit for stream to be ready
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (!localStream) {
+    // Check the returned stream instead of state (which may not be updated yet)
+    if (!stream) {
       setMessage({
         text: "Camera initialization failed. Please try again.",
         type: "error",
@@ -360,9 +361,8 @@ const VideoMeetup = ({ onBack }) => {
     <>
       <Navbar currentPage="video-meetup" setCurrentPage={setCurrentPage} />
       <div
-        className={`min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 pt-20 transition-all duration-1000 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className={`min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20 pt-20 transition-all duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+          }`}
       >
         <div className="max-w-6xl mx-auto px-4 py-8">
           {currentView === "lobby" && (
@@ -390,13 +390,12 @@ const VideoMeetup = ({ onBack }) => {
 
                 {message.text && (
                   <div
-                    className={`p-4 rounded-lg mb-6 ${
-                      message.type === "error"
-                        ? "bg-red-500/20 border border-red-500/50 text-red-300"
-                        : message.type === "success"
+                    className={`p-4 rounded-lg mb-6 ${message.type === "error"
+                      ? "bg-red-500/20 border border-red-500/50 text-red-300"
+                      : message.type === "success"
                         ? "bg-green-500/20 border border-green-500/50 text-green-300"
                         : "bg-blue-500/20 border border-blue-500/50 text-blue-300"
-                    }`}
+                      }`}
                   >
                     {message.text}
                   </div>
@@ -418,9 +417,8 @@ const VideoMeetup = ({ onBack }) => {
                           localVideoRef.current.play().catch(console.error);
                         }
                       }}
-                      className={`w-full h-full object-cover cursor-pointer ${
-                        localStream && isVideoEnabled ? "block" : "hidden"
-                      }`}
+                      className={`w-full h-full object-cover cursor-pointer ${localStream && isVideoEnabled ? "block" : "hidden"
+                        }`}
                     />
                     {(!localStream || !isVideoEnabled) && (
                       <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-800">
@@ -468,9 +466,8 @@ const VideoMeetup = ({ onBack }) => {
                       <div className="absolute top-2 left-2">
                         <div className="flex items-center gap-1 bg-black/50 px-2 py-1 rounded">
                           <div
-                            className={`w-2 h-2 rounded-full ${
-                              isVideoEnabled ? "bg-green-400" : "bg-red-400"
-                            }`}
+                            className={`w-2 h-2 rounded-full ${isVideoEnabled ? "bg-green-400" : "bg-red-400"
+                              }`}
                           ></div>
                           <span className="text-white text-xs">
                             {isVideoEnabled ? "Camera On" : "Camera Off"}
@@ -483,11 +480,10 @@ const VideoMeetup = ({ onBack }) => {
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                         <button
                           onClick={toggleVideo}
-                          className={`p-3 rounded-full transition-colors ${
-                            isVideoEnabled
-                              ? "bg-gray-700 hover:bg-gray-600 text-white"
-                              : "bg-red-500 hover:bg-red-600 text-white"
-                          }`}
+                          className={`p-3 rounded-full transition-colors ${isVideoEnabled
+                            ? "bg-gray-700 hover:bg-gray-600 text-white"
+                            : "bg-red-500 hover:bg-red-600 text-white"
+                            }`}
                         >
                           {isVideoEnabled ? (
                             <Video size={20} />
@@ -497,11 +493,10 @@ const VideoMeetup = ({ onBack }) => {
                         </button>
                         <button
                           onClick={toggleAudio}
-                          className={`p-3 rounded-full transition-colors ${
-                            isAudioEnabled
-                              ? "bg-gray-700 hover:bg-gray-600 text-white"
-                              : "bg-red-500 hover:bg-red-600 text-white"
-                          }`}
+                          className={`p-3 rounded-full transition-colors ${isAudioEnabled
+                            ? "bg-gray-700 hover:bg-gray-600 text-white"
+                            : "bg-red-500 hover:bg-red-600 text-white"
+                            }`}
                         >
                           {isAudioEnabled ? (
                             <Mic size={20} />
@@ -603,9 +598,8 @@ const VideoMeetup = ({ onBack }) => {
                       autoPlay
                       muted
                       playsInline
-                      className={`w-full h-full object-cover ${
-                        localStream && isVideoEnabled ? "block" : "hidden"
-                      }`}
+                      className={`w-full h-full object-cover ${localStream && isVideoEnabled ? "block" : "hidden"
+                        }`}
                     />
                     {(!localStream || !isVideoEnabled) && (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -615,6 +609,14 @@ const VideoMeetup = ({ onBack }) => {
                             size={64}
                           />
                           <p className="text-gray-400">Camera is off</p>
+                          {localStream && (
+                            <button
+                              onClick={toggleVideo}
+                              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
+                            >
+                              Turn On Camera
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
@@ -655,11 +657,10 @@ const VideoMeetup = ({ onBack }) => {
               <div className="flex justify-center gap-4">
                 <button
                   onClick={toggleVideo}
-                  className={`p-4 rounded-full transition-colors ${
-                    isVideoEnabled
-                      ? "bg-gray-700 hover:bg-gray-600 text-white"
-                      : "bg-red-500 hover:bg-red-600 text-white"
-                  }`}
+                  className={`p-4 rounded-full transition-colors ${isVideoEnabled
+                    ? "bg-gray-700 hover:bg-gray-600 text-white"
+                    : "bg-red-500 hover:bg-red-600 text-white"
+                    }`}
                 >
                   {isVideoEnabled ? (
                     <Video size={24} />
@@ -669,11 +670,10 @@ const VideoMeetup = ({ onBack }) => {
                 </button>
                 <button
                   onClick={toggleAudio}
-                  className={`p-4 rounded-full transition-colors ${
-                    isAudioEnabled
-                      ? "bg-gray-700 hover:bg-gray-600 text-white"
-                      : "bg-red-500 hover:bg-red-600 text-white"
-                  }`}
+                  className={`p-4 rounded-full transition-colors ${isAudioEnabled
+                    ? "bg-gray-700 hover:bg-gray-600 text-white"
+                    : "bg-red-500 hover:bg-red-600 text-white"
+                    }`}
                 >
                   {isAudioEnabled ? <Mic size={24} /> : <MicOff size={24} />}
                 </button>

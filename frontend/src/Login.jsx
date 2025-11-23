@@ -19,7 +19,7 @@ const Login = ({ currentPage, setCurrentPage }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
-  
+
   const { login, isLoading } = useAppContext();
   const isVisible = useFadeIn(200);
 
@@ -40,7 +40,7 @@ const Login = ({ currentPage, setCurrentPage }) => {
 
     try {
       const result = await login({ email, password });
-      
+
       if (result.success) {
         setMessage({ text: result.message, type: 'success' });
         // Navigate to home after successful login
@@ -73,11 +73,10 @@ const Login = ({ currentPage, setCurrentPage }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      
+
       <div className="pt-16 min-h-screen flex items-center justify-center px-4">
-        <div className={`bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-md transition-all duration-1000 ${
-          isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}>
+        <div className={`bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-md transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
               Welcome Back
@@ -89,11 +88,10 @@ const Login = ({ currentPage, setCurrentPage }) => {
 
           {/* Message Display */}
           {message.text && (
-            <div className={`p-4 rounded-lg mb-6 flex items-center gap-2 ${
-              message.type === 'success' 
-                ? 'bg-green-500/20 border border-green-500/50 text-green-300' 
+            <div className={`p-4 rounded-lg mb-6 flex items-center gap-2 ${message.type === 'success'
+                ? 'bg-green-500/20 border border-green-500/50 text-green-300'
                 : 'bg-red-500/20 border border-red-500/50 text-red-300'
-            }`}>
+              }`}>
               {message.type === 'success' ? (
                 <CheckCircle size={20} />
               ) : (
@@ -156,7 +154,8 @@ const Login = ({ currentPage, setCurrentPage }) => {
               </div>
               <button
                 type="button"
-                className="text-sm text-blue-400 hover:text-blue-300"
+                onClick={() => setCurrentPage('forgot-password')}
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-300"
                 disabled={isLoading}
               >
                 Forgot password?
@@ -193,7 +192,7 @@ const Login = ({ currentPage, setCurrentPage }) => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
