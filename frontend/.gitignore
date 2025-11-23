@@ -2,6 +2,9 @@
 .env
 .env.local
 .env.*.local
+# Allow production and development env files (no secrets, just public URLs)
+!.env.production
+!.env.development
 
 # Logs
 logs

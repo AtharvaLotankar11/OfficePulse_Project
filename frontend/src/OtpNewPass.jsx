@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2, CheckCircle, XCircle, ArrowLeft, RefreshCw } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { getApiUrl } from './config/environment';
 
 const useFadeIn = (delay = 0) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,7 +23,7 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const isVisible = useFadeIn(200);
 
   const handleSendOtp = async (e) => {
@@ -43,8 +44,7 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch(getApiUrl('auth/forgot-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const response = await fetch(getApiUrl('auth/forgot-password'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,8 +127,7 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+      const response = await fetch(getApiUrl('auth/verify-otp'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,29 +170,27 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20">
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      
+
       <div className="pt-16 min-h-screen flex items-center justify-center px-4">
-        <div className={`bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-md transition-all duration-1000 ${
-          isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}>
+        <div className={`bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-md transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
               {step === 1 ? 'Forgot Password?' : 'Reset Password'}
             </h2>
             <p className="text-gray-300">
-              {step === 1 
-                ? 'Enter your email to receive an OTP' 
+              {step === 1
+                ? 'Enter your email to receive an OTP'
                 : 'Enter the OTP and your new password'}
             </p>
           </div>
 
           {/* Message Display */}
           {message.text && (
-            <div className={`p-4 rounded-lg mb-6 flex items-center gap-2 ${
-              message.type === 'success' 
-                ? 'bg-green-500/20 border border-green-500/50 text-green-300' 
+            <div className={`p-4 rounded-lg mb-6 flex items-center gap-2 ${message.type === 'success'
+                ? 'bg-green-500/20 border border-green-500/50 text-green-300'
                 : 'bg-red-500/20 border border-red-500/50 text-red-300'
-            }`}>
+              }`}>
               {message.type === 'success' ? (
                 <CheckCircle size={20} />
               ) : (
@@ -348,7 +345,7 @@ const OtpNewPass = ({ currentPage, setCurrentPage }) => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
