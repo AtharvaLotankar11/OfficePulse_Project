@@ -2,25 +2,30 @@ const nodemailer = require('nodemailer');
 
 // Create transporter
 const createTransporter = () => {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    },
+    tls: {
+      rejectUnauthorized: false // Helps with some self-signed cert issues in dev/cloud
+    }
+  });
 };
 
 // Send OTP email
 const sendOtpEmail = async (email, otp) => {
-    try {
-        const transporter = createTransporter();
+  try {
+    const transporter = createTransporter();
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM || 'OfficePulse <noreply@officepulse.com>',
-            to: email,
-            subject: 'Password Reset OTP - OfficePulse',
-            html: `
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || 'OfficePulse <noreply@officepulse.com>',
+      to: email,
+      subject: 'Password Reset OTP - OfficePulse',
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -92,17 +97,17 @@ const sendOtpEmail = async (email, otp) => {
         </body>
         </html>
       `
-        };
+    };
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('OTP email sent:', info.messageId);
-        return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error('Error sending OTP email:', error);
-        throw error;
-    }
+    const info = await transporter.sendMail(mailOptions);
+    console.log('OTP email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    throw error;
+  }
 };
 
 module.exports = {
-    sendOtpEmail
+  sendOtpEmail
 };
